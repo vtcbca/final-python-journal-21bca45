@@ -1,0 +1,100 @@
+
+create table department
+(
+ dept_no int primary key,
+dept_name char(50),
+location char(50)
+);
+insert into department values(1,"Sales","Delhi");
+insert into department values(2,"Production","Mumbai");
+insert into department values(3,"IT","Hyderbad");
+insert into department values(4,"Markerting","Ahemdabad");
+insert into department values(5,"Analysis","Surat");
+insert into department values(6,"BCA","MP");
+insert into department values(7,"BBA","Baroda");
+
+create table employee
+(
+emp_id int(10), 
+emp_name char(50),
+gender char(50),
+dept_no references department(dept_no),
+address char(50),
+Designation char(50),
+salary int(10),
+experience int(10),
+email char(50)
+);
+
+insert into employee  values(101,"yash","male",1,"toronto","CEO",950000,9,"mahajanyash@gmail.com");
+insert into  employee values(102,"pravin'""male",2,"ontario","HR",950000,20,"mahajanpravin@gmail.com");
+insert into employee values(103, "vaishali","female" ,3,"ontario","manager",850000,18,"mahajanvaishali@gmail.com");
+insert into employee values(104, "Pari", "female" ,4,"miami","manager",850000,4,"mahajanpari@gmail.com" );
+insert into  employee values(105, "chetan" ,"male",5,"las_vegas","manager",750000,14, "mahajanchetan@gmail.com" );
+insert into  employee values(106, "mahendra","male",6,"las_vegas","HOD",65000,7,"patilmahendra@gmail.com");
+
+queries:
+1. Display all Department belonging to location ‘Surat’.
+-> select * from department where location="Surat";
+
+2. List all department name statring with ‘A’.
+->select * from department where dept_name like "A%";
+
+3. List all departments whose number is between 1 and 100.
+->select * from department where dept_no between 1 and 100;
+
+4. Delete ‘TRG’ department.
+->delete from department where dept_name="TRG";
+
+5. Change department name ‘BBA’ to ‘IT’.
+->update department set dept_name="IT" where dept_name="BBA";
+
+6. Update the location whose dept_name second letter is ‘a’.
+->update department set location="vyara" where dept_name like "_a%";
+
+7. Display data whose location is ‘Baroda’, ‘Surat’ and ‘Ahemdabad’.
+->select * from department where location IN("Baroda","Surat","Ahmedabad");
+
+8. Display data who are not from ‘sales’ and ‘marketing’ department.
+->select * from department where dept_name NOT IN("Sales","Marketing");
+
+9. List all records of each table in ascending order.
+-> select * from employee  order by emp_name asc;
+->select * from department  order by dept_name asc;
+
+10. Display female employee list.
+-> select * from employee where gender="female";
+
+11. Display all record order by emp_name.
+->select * from employee order by emp_name;
+
+12. Find the names of the employee who has salary less than 5000 and greater than
+2000.
+->  select emp_name from employee  where salary <5000 and  salary>2000;
+
+13. Display the names and the designation of all female employee in descending
+order.
+-> select * from employee  where  gender="female" order by emp_name desc;
+
+14. Display the names of all the employees who names starts with ‘A’ ends with ‘A’.
+->select * from employee where emp_name like "a%a";
+
+15. Find the name of employee and salary for those who had obtain minimum
+salary.
+->select emp_name,min(salary) as salary from employee;
+
+16. Add 10% raise in salary of all employees whose department is ‘IT’.
+-> update employee set  salary=salary+(salary*10)/100 where dept_no = (select dept_no from department where dept_name='IT');
+
+17. List names of employees who are fresher’s (less than 1 year of experience).
+->select emp_name from employee where experience<10;
+
+18. List department wise names of employees who has more than 5 years of
+experience.
+-> select * from employee where experience >5;
+
+19. List department having no employees.
+->SELECT FROM DEPARTMENT WHERE DEPT_NO NOT IN(SELECT DEPT_NO FROM EMPLOYEE);
+
+20. Delete the employee whose salary is less than 10000.List all departments whose number is between 1 and 100.
+-> delete  from employee where salary<10000;

@@ -1,0 +1,141 @@
+
+create table student
+(
+rollno int primarykey,
+name char(50),
+class char(50),
+birthdate int(10)
+);
+insert into student
+values(1,"yash","FY","18/01/2004");
+insert into student
+values(2,"chandresh","FY","17/11/2002");
+insert into student
+values(3,"ajay","FY","11/05/2003");
+insert into student
+values(4,"abhi","TY","8/10/2000");
+insert into student
+values(5,"mahendra","SY","01/07/2006");
+insert into student
+values(6,"chetan","SY","28/02/2000");
+insert into student
+values(7,"kamlesh","SY","24/12/2001");
+
+
+create table course
+(
+courseno int primarykey,
+coursename char(50),
+max_marks int default(100),
+pass_marks int default(35)
+);
+
+insert into course(courseno,coursename)
+values(101,"Database Management system");
+insert into course(courseno,coursename)
+values(102,"Computer Networks");
+insert into course(courseno,coursename)
+values(103,"Machine Learning");
+insert into course(courseno,coursename)
+values(104,"Software Management");
+insert into course(courseno,coursename)
+values(105,"Cyber Security");
+insert into course(courseno,coursename)
+values(106,"Networking");
+insert into course(courseno,coursename)
+values(107,"Data Analysis");
+
+
+create table sc
+(
+rollno references student,
+courseno references course,
+marks int(10)
+);
+insert into sc
+values(1,101,90);
+insert into sc
+values(2,102,98);
+insert into sc
+values(3,103,56);
+insert into sc
+values(4,104,78);
+insert into sc
+values(5,105,70);
+insert into sc
+values(6,106,99);
+insert into sc
+values(7,107,34);
+
+1. Display details of student who takes ‘Database Management System’ course.
+-> SELECT S.* FROM STUDENT S,SC M
+	WHERE S.ROLLNO=M.ROLLNO AND M.COURSENO=(SELECT COURSENO FROM COURSE WHERE COURSENAME='DATABASE MANAGEMENT SYSTEM');
+
+2. Display the names of students who have scored more than 70% in Computer
+Networks and have not failed in any subject.
+->SELECT *,M.MARKS=(M.MARKS*100/100) FROM STUDENT S,SC M
+	WHERE S.ROLLNO=M.ROLLNO AND M.MARKS>70 AND MARKS>35 
+	AND M.COURSENO=(SELECT COURSENO FROM COURSE WHERE COURSENAME='COMPUTER NETWORK');
+
+3. Display the average marks obtained by each student.
+->SELECT ROLLNO,AVG(MARKS) "AVERAGE MARKS SCORED BY STUDENT" FROM SC
+	GROUP BY ROLLNO;
+	
+
+4. Select all courses where passing marks are more than 30% of average maximum
+mark.
+->SELECT *,AVG(PASS_MARKS) FROM COURSE
+	GROUP BY COURSENAME
+	HAVING PASS_MARKS>30;
+
+
+5. Display all course name.
+->SELECT COURSENAME FROM COURSE;
+
+6. Display the student details who have secure 1st rank in ‘Computer Network’ 
+course.
+->	SELECT *,MAX(MARKS) FROM SC M,STUDENT S
+	WHERE S.ROLLNO=M.ROLLNO AND M.COURSENO=(SELECT COURSENO FROM COURSE WHERE COURSENAME='COMPUTER 	NETWORK');
+
+7. Display all SY student list along with course name.
+->	SELECT S.*,C.COURSENAME FROM STUDENT S,SC M,COURSE C
+	WHERE S.ROLLNO=M.ROLLNO AND C.COURSENO=M.COURSENO AND S.CLASS='SY';
+
+8. Display the average marks obtained by each student.
+->	SELECT *,AVG(MARKS) FROM SC
+	GROUP BY ROLLNO;	 
+
+9. Write a trigger which does not allow deletion of student whose pass_mark is 
+greater than 35.
+->	CREATE TRIGGER DEL_TRG
+	BEFORE DELETE ON STUDENT
+	BEGIN
+		SELECT CASE
+			WHEN (SELECT S.*,C.*,M.* FROM STUDENT S, COURSE C,SC M WHERE S.ROLLNO=M.ROLLNO AND C.COURSENO=M.COURSENO AND C.PASS_MARKS>35)
+				THEN RAISE(ABORT,'WHEN THE SUBJECT HAVE PASSING MARKS MORE THEN 35 ')
+		END;
+	END;
+
+	
+10. Write a trigger which does not allow insertion / updating student whose max marks more than 100 and less than 0
+->	CREATE TRIGGER INSR_TRG
+
+	BEFORE INSERT ON SC
+	BEGIN
+		SELECT
+		CASE
+			WHEN NEW.MARKS>100 OR NEW.MARKS<0
+			THEN RAISE (ABORT,'PLEASE ENTER MARKS BETWEEEN 0 TO 100')
+		END;
+	END;
+
+	CREATE TRIGGER UPD_TRG
+	BEFORE UPDATE ON SC
+	BEGIN
+		SELECT
+		CASE
+
+			WHEN NEW.MARKS>100 OR NEW.MARKS<0
+			THEN RAISE (ABORT,'PLEASE ENTER MARKS BETWEEEN 0 TO 100')
+		END;
+	END;
